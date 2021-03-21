@@ -1,7 +1,7 @@
 import string
 import random
 import hashlib
-import threading
+import multiprocessing
 from threading import Thread
 from hashlib import sha256
 import time
@@ -29,28 +29,28 @@ def pass_gen():
 
 
 def Hash(x, hash, n, x_1, *pass_arr):
-    start_time = time.time()
     j = 1
-    if x_1 >= 11881376:
-        x_1 = 11881376
 
-    for i in range(x, x_1):
+    start_time = time.time()
+    count = 0
+    for passwd in pass_arr:
+
         #print('1')
         if j == 1:
             #print('razmer massiva   '+ str(len(pass_arr))+ '\n')
-            print("Запускаем поток " + str(n + 1) + " с позиции " + str(x) + '('+str(pass_arr[i])+')' + '\n')
+            print("Запускаем поток " + str(n + 1) + " с позиции " + str(x) +' - '+ str(x_1) + '\t('+str(passwd)+')' + '\n')
             #print(line)
             #print(x, x_1, '\n')
             j = 2
-        m = sha256(pass_arr[i].encode('utf-8')).hexdigest().rstrip()
+
+        m = sha256(passwd.encode('utf-8')).hexdigest().rstrip()
+        count+=1
 
         if m == hash:
-            print('Хеш подобран в потоке номер ' + str(n+1) + '\n')
+            print('Хеш подобран в потоке номер ' + str(n+1) + " Хешей посчитанно :" + str(count)+ '\n')
             print('Выбраный хеш: ' +str(hash))
-            print("Пароль: " + str(pass_arr[i]))
+            print("Пароль: " + str(passwd))
             print("--- %s seconds ---" % (time.time() - start_time))
-
-
 
 
 def hash_gen():
@@ -92,9 +92,18 @@ def main():
 
     for i in range(int(threads_num)):
         a = int(i * x)
-        x1 = int(a+(i+1 * x))
-        th = Thread(target=Hash, args=(a, hash, i, x1, *pass_arr))
+        x_1 = int(a+(i+1 * x))
+
+        if x_1 >= 11881376:
+            x_1 = 11881376
+
+        split_pass_arr = []
+        for j in range(a, x_1):
+            split_pass_arr.append(pass_arr[j])
+
+        th = multiprocessing.Process(target=Hash, args=(a, hash, i, x_1, *split_pass_arr))
         th.start()
+
 
 if __name__ == '__main__':
    main()
