@@ -1,0 +1,9 @@
+#/!bin/bash
+echo "Start python script"
+time python pr4.py
+echo "Start C++ script"
+time ./a.out
+echo "Start java script"
+time java Main.java
+echo "Start asm script"
+time ./pr4

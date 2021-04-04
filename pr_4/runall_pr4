@@ -1,0 +1,10 @@
+#!/bin/bash
+rm result.txt
+touch result.txt
+echo "Start python script"
+python pr4.py
+echo "Start c++ script"
+./a.out
+echo "Start java script"
+java Main.java
+nano result.txt
